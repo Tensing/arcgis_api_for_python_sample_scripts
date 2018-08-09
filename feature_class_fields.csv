@@ -1,0 +1,6 @@
+v_field_alias;v_field_name;v_field_type;v_field_length;v_field_domain
+Description;DESCRIPTION;TEXT;50;
+Status;STATUS;TEXT;40;STATUS_DOMAIN
+Color;COLOR;TEXT;40;COLOR_DOMAIN
+Date latest inspection;DATE_LATEST_INSPECTION;Date;;
+Remark;REMARK;TEXT;200;
