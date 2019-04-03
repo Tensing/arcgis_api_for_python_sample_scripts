@@ -14,6 +14,13 @@ import os, zipfile, arcpy, csv
 from arcpy import env
 import domain_definitions
 
+# zipdir: to be able to zip the File Geodatabase after creation
+def zipdir(path, ziph):
+    # ziph is zipfile handle
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            ziph.write(os.path.join(root, file))
+
 # Overwrite pre-existing files
 env.overwriteOutput = True
 
@@ -38,7 +45,6 @@ print('===================')
 my_gdb = arcpy.CreateFileGDB_management(os.path.dirname(os.path.realpath(__file__)),fgdb)
 
 print (datetime.datetime.today().strftime('%c')+": File Geodatabase has been created")
-
 
 # All domains will be created from a list in an external file: domain_definitions.py
 domain_definitions.create_domains(my_gdb)
@@ -77,15 +83,16 @@ print('===================')
 print ("Ready: "+datetime.datetime.today().strftime('%c'))
 print('===================')
 
+# In case you want to publish an empty File Geodatabase, you can zip it here and now
 print('Do you want to zip the File Geodatabase {} immediately?'.format(fgdb))
-answer = input('y/yes or n/no >>').lower()
+answer = input('y/yes or n/no >> ').lower()
 if answer in ['yes', 'y']:
     zip_file_name = '{}.zip'.format(fgdb)
 
     # Opening the 'Zip' in writing mode
-    with zipfile.ZipFile(zip_file_name, 'w') as file:
+    with zipfile.ZipFile(zip_file_name, 'w', zipfile.ZIP_DEFLATED) as zipf:
         # write mode overrides all the existing files in the 'Zip.'
-        file.write(fgdb)
+        zipdir('{}/'.format(fgdb), zipf)
         print (datetime.datetime.today().strftime('%c')+": File Geodatabase has been zipped")
 
 print('===================')
