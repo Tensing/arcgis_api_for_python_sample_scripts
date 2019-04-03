@@ -2,7 +2,7 @@
 ## Script: agol_publish_fc_from_fgdb_to_featureserver_layer.py
 ## Goal: to publish a Feature Class from a File Geodatabase to a FeatureServer Layer
 ## Author: Egge-Jan Polle - Tensing GIS Consultancy
-## Date: August 3, 2018
+## Date: April 3, 2019
 ## ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #
 # This script should be run within a specific ArcGIS/Python environment using the batch file below
@@ -15,7 +15,7 @@ from provide_credentials import provide_credentials
 
 # Variables to complete before publishing the service =====================================================================================
 # data - The path to the zip file containing the input File Geodatabase
-# E.g.'C:/Data/Points.gdb.zip'
+# E.g.'C:/Data/MY_NEW_FGDB.gdb.zip'
 data = ''
 # service_name - The name of the FeatureServer
 # E.g. 'MY_VERY_FIRST_FEATURE_SERVER'
@@ -37,7 +37,7 @@ service_credits = '© Me, myself and I'
 service_tags = ['INSPIRE','Open Data']
 # service_wkid - To set the targetSR to the SR of your input data.
 # If you don't specify the targetSR data will be transformed to wkid 102100 (-> wkid 3857 -> Web Mercator)
-# E.g. 28992
+# E.g. 28992 (i.e. RD_New)
 service_wkid = 28992
 # service_thumbnail_path - The path to a thumbnail file (a 600*400 pixels PNG file) for your service
 # E.g.'C:/Data/Thumbnail_test.png'
@@ -51,6 +51,7 @@ print('First you have to log in to ArcGIS Online')
 # Log in
 username, password = provide_credentials()
 my_agol = GIS("https://www.arcgis.com", username, password)
+del password # It is best to remove the password from memory asap
 
 # Add input File Geodatabase
 filegdb = my_agol.content.add({"type" : "File Geodatabase"}, data)
@@ -64,8 +65,10 @@ srv_publish_parameters = {'name' : service_name,
                          'targetSR' : { 'wkid' : service_wkid }} 
 
 published_service = filegdb.publish(publish_parameters=srv_publish_parameters)
+item_id = published_service.id
 
 print(str(datetime.datetime.now()) + " - Service has been published on ArcGIS Online")
+print(str(datetime.datetime.now()) + " - The ItemID of the new service is: {}".format(item_id))
 wait = input("Optionally: check your content - PRESS ENTER TO CONTINUE")
 
 # Update description of the service item
